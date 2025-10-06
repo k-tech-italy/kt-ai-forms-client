@@ -51,7 +51,7 @@ function App() {
       <Avatar src={userAvatar.src} name={userAvatar.name} />
     </Message>
     setMessages([...messages, newMessage]);
-    // TODO Api Call
+    // TODO Api Call grabbing the context
   }
 
   return (
@@ -61,8 +61,8 @@ function App() {
           <MainContainer>
             <ChatContainer>
               <MessageList>
-                {messages.map((message) => (
-                  message
+                {messages.map((message, index) => (
+                  <div key={`message-${index}`}>{message}</div>
                 ))}
               </MessageList>
               <MessageInput 

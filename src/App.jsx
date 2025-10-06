@@ -7,6 +7,7 @@ import {
   MessageList,
   Message,
   MessageInput,
+  Avatar
 } from "@chatscope/chat-ui-kit-react";
 
 function App() {
@@ -22,11 +23,18 @@ function App() {
               <MessageList>
                 <Message
                   model={{
-                    message: "Hello my friend",
+                    message: "Hi there, I am your AI assistant. How can I help you today?",
                     sentTime: "just now",
                     sender: "Joe",
+                    direction: "incoming",
+                    position: "single",
                   }}
-                />
+                >
+                  <Avatar
+                    name="Joe"
+                    src="https://chatscope.io/storybook/react/assets/joe-v8Vy3KOS.svg"
+                  />
+                </Message>
               </MessageList>
               <MessageInput placeholder="Type message here" />
             </ChatContainer>

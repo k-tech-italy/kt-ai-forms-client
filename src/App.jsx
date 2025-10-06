@@ -1,4 +1,6 @@
+import { useState } from "react"
 import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
+import "./App.css";
 import {
   MainContainer,
   ChatContainer,
@@ -9,24 +11,33 @@ import {
 
 function App() {
 
+  const [chatCollapsed, setChatCollapsed] = useState(true);
+
   return (
     <>
-      <div style={{ position: "relative", width: "500px", height: "500px" }}>
-        <MainContainer>
-          <ChatContainer>
-            <MessageList>
-              <Message
-                model={{
-                  message: "Hello my friend",
-                  sentTime: "just now",
-                  sender: "Joe",
-                }}
-              />
-            </MessageList>
-            <MessageInput placeholder="Type message here" />
-          </ChatContainer>
-        </MainContainer>
-      </div>
+      {!chatCollapsed && (
+        <div className="chat-window">
+          <MainContainer>
+            <ChatContainer>
+              <MessageList>
+                <Message
+                  model={{
+                    message: "Hello my friend",
+                    sentTime: "just now",
+                    sender: "Joe",
+                  }}
+                />
+              </MessageList>
+              <MessageInput placeholder="Type message here" />
+            </ChatContainer>
+          </MainContainer>
+        </div>
+      )}
+      <button className="chat-button" onClick={() => setChatCollapsed(!chatCollapsed)}>
+        <svg viewBox="0 0 24 24">
+          <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z" />
+        </svg>
+      </button>
     </>
   )
 }

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
 import "./App.css";
 import {
@@ -13,6 +13,46 @@ import {
 function App() {
 
   const [chatCollapsed, setChatCollapsed] = useState(true);
+  const [messages, setMessages] = useState([]);
+
+  const aiAvatar = {
+    name: "Joe",
+    src: "https://chatscope.io/storybook/react/assets/joe-v8Vy3KOS.svg"
+  }
+
+  const userAvatar = {
+    name: "Eliot",
+    src: "https://chatscope.io/storybook/react/assets/eliot-JNkqSAth.svg"
+  }
+
+  // set the initial messages by the AI
+  useEffect(() => {
+    setMessages([
+      <Message model={{
+        message: "Hi there, I am your AI assistant. How can I help you today?",
+        sentTime: "just now",
+        sender: "Joe",
+        direction: "incoming",
+        position: "single",
+      }}>
+        <Avatar src={aiAvatar.src} name={aiAvatar.name} />
+      </Message>
+    ])
+  },[]);
+
+  const onSend = (message) => {
+    const newMessage = <Message model={{
+      message: message,
+      sentTime: "just now",
+      sender: "Joe",
+      direction: "outgoing",
+      position: "single",
+    }}>
+      <Avatar src={userAvatar.src} name={userAvatar.name} />
+    </Message>
+    setMessages([...messages, newMessage]);
+    // TODO Api Call
+  }
 
   return (
     <>
@@ -21,22 +61,15 @@ function App() {
           <MainContainer>
             <ChatContainer>
               <MessageList>
-                <Message
-                  model={{
-                    message: "Hi there, I am your AI assistant. How can I help you today?",
-                    sentTime: "just now",
-                    sender: "Joe",
-                    direction: "incoming",
-                    position: "single",
-                  }}
-                >
-                  <Avatar
-                    name="Joe"
-                    src="https://chatscope.io/storybook/react/assets/joe-v8Vy3KOS.svg"
-                  />
-                </Message>
+                {messages.map((message) => (
+                  message
+                ))}
               </MessageList>
-              <MessageInput placeholder="Type message here" />
+              <MessageInput 
+              placeholder="Type message here"
+              onSend={onSend}
+              
+              />
             </ChatContainer>
           </MainContainer>
         </div>

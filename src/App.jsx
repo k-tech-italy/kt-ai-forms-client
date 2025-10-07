@@ -9,6 +9,7 @@ import {
   MessageInput,
   Avatar
 } from "@chatscope/chat-ui-kit-react";
+import {createMessage} from "./api/chat.js";
 
 function App() {
 
@@ -40,7 +41,7 @@ function App() {
     ])
   },[]);
 
-  const onSend = (message) => {
+  const onSend = async (message) => {
     const newMessage = <Message model={{
       message: message,
       sentTime: "just now",
@@ -51,9 +52,18 @@ function App() {
       <Avatar src={userAvatar.src} name={userAvatar.name} />
     </Message>
     setMessages([...messages, newMessage]);
-    // TODO Api Call grabbing the context
+    const context = getContext()
+    console.log(context)
+    await createMessage(message, context);
   }
-
+  const getContext = () => {
+      const context = window.ai_context;
+      if (context) {
+        return context;
+      }
+      console.error("No context provided")
+      return {}
+  }
   return (
     <>
       {!chatCollapsed && (

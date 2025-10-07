@@ -1,9 +1,11 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import './index.css'
 import App from './App.jsx'
 
-createRoot(document.getElementById('root')).render(
+const elemDiv = document.createElement('div');
+elemDiv.id = "ai-forms-chatbot"
+document.body.appendChild(elemDiv);
+createRoot(document.getElementById("ai-forms-chatbot")).render(
   <StrictMode>
     <App />
   </StrictMode>,

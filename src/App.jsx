@@ -15,6 +15,7 @@ function App() {
 
   const [chatCollapsed, setChatCollapsed] = useState(true);
   const [messages, setMessages] = useState([]);
+  const [context, setContext] = useState({})
 
   const aiAvatar = {
     name: "Joe",
@@ -28,18 +29,42 @@ function App() {
 
   // set the initial messages by the AI
   useEffect(() => {
-    setMessages([
-      <Message model={{
-        message: "Hi there, I am your AI assistant. How can I help you today?",
-        sentTime: "just now",
-        sender: "Joe",
-        direction: "incoming",
-        position: "single",
-      }}>
-        <Avatar src={aiAvatar.src} name={aiAvatar.name} />
-      </Message>
-    ])
+    if(window.ai_context)
+    {
+      setContext(window.ai_context)
+      setMessages([
+        <Message model={{
+          message: "Hi there, I am your AI assistant. How can I help you today?",
+          sentTime: "just now",
+          sender: "Joe",
+          direction: "incoming",
+          position: "single",
+        }}>
+          <Avatar src={aiAvatar.src} name={aiAvatar.name}/>
+        </Message>
+      ])
+    }
+    else
+    {
+      console.error("No context provided")
+      setMessages([
+        <Message model={{
+          message: "No context provided. Try to refresh the page",
+          sentTime: "just now",
+          sender: "Joe",
+          direction: "incoming",
+          position: "single",
+
+        }}>
+          <Avatar src={aiAvatar.src} name={aiAvatar.name} />
+          <Message.HtmlContent className="error-message"
+                               html="<div>No context provided. Try to refresh the page</div>"
+          ></Message.HtmlContent>
+        </Message>
+      ])
+    }
   },[]);
+
 
   const onSend = async (message) => {
     const newMessage = <Message model={{
@@ -52,18 +77,10 @@ function App() {
       <Avatar src={userAvatar.src} name={userAvatar.name} />
     </Message>
     setMessages([...messages, newMessage]);
-    const context = getContext()
     console.log(context)
     await createMessage(message, context);
   }
-  const getContext = () => {
-      const context = window.ai_context;
-      if (context) {
-        return context;
-      }
-      console.error("No context provided")
-      return {}
-  }
+
   return (
     <>
       {!chatCollapsed && (
@@ -78,7 +95,7 @@ function App() {
               <MessageInput 
               placeholder="Type message here"
               onSend={onSend}
-              
+              disabled={!context || Object.keys(context).length === 0}
               />
             </ChatContainer>
           </MainContainer>

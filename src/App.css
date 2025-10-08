@@ -46,3 +46,6 @@
 .cs-main-container {
   border-radius: 25px;
 }
+.error-message{
+  color: red
+}

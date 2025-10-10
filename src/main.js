@@ -120,8 +120,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 // Remove the loading message
                 messagesContainer.removeChild(loadingMessage);
 
-                // Assuming the server returns an object with a 'response' field
-                const llmResponse = data.response || "Sorry, I didn't get a proper response.";
+                // Handle missing or falsy response property
+                const llmResponse = (data && data.response) || "Sorry, I didn't get a proper response.";
 
                 // 4. Display the LLM's response
                 displayMessage(llmResponse, 'llm');

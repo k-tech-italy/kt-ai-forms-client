@@ -74,6 +74,8 @@
     padding: 15px;
     overflow-y: auto;
     background-color: #fff;
+    display: flex;
+    flex-direction: column;
 }
 
 .message {
@@ -81,6 +83,7 @@
     padding: 8px 12px;
     border-radius: 15px;
     max-width: 80%;
+    display: inline-block;
 }
 
 .user-message {
@@ -88,6 +91,7 @@
     color: white;
     margin-left: auto;
     text-align: right;
+    display: inline-block;
 }
 
 .llm-message {
@@ -95,6 +99,7 @@
     color: #333;
     margin-right: auto;
     text-align: left;
+    display: inline-block;
 }
 
 .loading-message {

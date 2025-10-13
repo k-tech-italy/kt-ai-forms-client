@@ -279,14 +279,14 @@ describe('Chat Interface', () => {
       await new Promise(resolve => setTimeout(resolve, 10));
 
       expect(fetchMock).toHaveBeenCalledWith(
-        'http://localhost:8000/message',
+        'http://localhost:8000/api/llm/call',
         expect.objectContaining({
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            prompt: 'Test prompt',
+            message: 'Test prompt',
             context: window.ai_context,
           })
         })
@@ -294,7 +294,7 @@ describe('Chat Interface', () => {
     });
 
     it('should display LLM response after successful fetch', async () => {
-      const mockResponse = { response: 'This is the LLM response' };
+      const mockResponse = { message: 'This is the LLM response' };
       fetchMock.mockResolvedValue({
         ok: true,
         json: async () => mockResponse

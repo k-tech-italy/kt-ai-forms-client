@@ -73,7 +73,10 @@
     flex-grow: 1;
     padding: 15px;
     overflow-y: auto;
+    overflow-x: hidden;
     background-color: #fff;
+    display: flex;
+    flex-direction: column;
 }
 
 .message {
@@ -81,6 +84,8 @@
     padding: 8px 12px;
     border-radius: 15px;
     max-width: 80%;
+    display: inline-block;
+    overflow-wrap: break-word;
 }
 
 .user-message {
@@ -88,6 +93,8 @@
     color: white;
     margin-left: auto;
     text-align: right;
+    display: inline-block;
+    overflow-wrap: break-word;
 }
 
 .llm-message {
@@ -95,6 +102,8 @@
     color: #333;
     margin-right: auto;
     text-align: left;
+    display: inline-block;
+    overflow-wrap: break-word;
 }
 
 .loading-message {
@@ -102,12 +111,16 @@
     color: #333;
     margin-right: auto;
     font-style: italic;
+    display: inline-block;
+    overflow-wrap: break-word;
 }
 .error-message {
     background-color: #e9ecef;
     color: #f44336;
     margin-right: auto;
     text-align: left;
+    display: inline-block;
+    overflow-wrap: break-word;
 }
 
 .chat-input {

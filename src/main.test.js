@@ -261,7 +261,7 @@ describe('Chat Interface', () => {
   });
 
   describe('Fetch API Integration', () => {
-    it('should send POST request with correct payload', async () => {
+    it('should send POST request with correct payload and default driver url', async () => {
       const mockResponse = { response: 'LLM response' };
       fetchMock.mockResolvedValue({
         ok: true,
@@ -280,6 +280,41 @@ describe('Chat Interface', () => {
 
       expect(fetchMock).toHaveBeenCalledWith(
         'http://localhost:8000/api/llm/call',
+        expect.objectContaining({
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Request-Marker': expect.anything()
+          },
+          body: JSON.stringify({
+            message: 'Test prompt',
+            context: window.ai_context,
+          })
+        })
+      );
+    });
+
+    it('should send POST request with correct custom driver base url', async () => {
+      const mockResponse = { response: 'LLM response' };
+      fetchMock.mockResolvedValue({
+        ok: true,
+        json: async () => mockResponse
+      });
+
+      window.ai_driver_url = 'https://example.com';
+
+      await loadModule();
+
+      const messageInput = document.getElementById('user-message');
+      const sendButton = document.getElementById('send-button');
+
+      messageInput.value = 'Test prompt';
+      sendButton.click();
+
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        'https://example.com/api/llm/call',
         expect.objectContaining({
           method: 'POST',
           headers: {

@@ -284,6 +284,7 @@ describe('Chat Interface', () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'X-Request-Marker': expect.anything()
           },
           body: JSON.stringify({
             message: 'Test prompt',

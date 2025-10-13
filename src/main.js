@@ -1,6 +1,7 @@
+import { v4 as uuidv4 } from 'uuid';
 document.addEventListener("DOMContentLoaded", () => {
     const CHAT_URL = "http://localhost:8000";
-
+    const uuid = uuidv4();
     const toggleButton = document.createElement("button");
     toggleButton.id = "chat-toggle-button";
     toggleButton.textContent = 'Ask the LLM 💬'
@@ -102,6 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-Request-Marker': uuid
             },
             // The body must be a stringified JSON object
             body: JSON.stringify({

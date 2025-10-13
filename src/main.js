@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 document.addEventListener("DOMContentLoaded", () => {
-    const CHAT_URL = "http://localhost:8000";
+    const CHAT_URL = window.ai_driver_url || "http://localhost:8000";
     const uuid = uuidv4();
     const toggleButton = document.createElement("button");
     toggleButton.id = "chat-toggle-button";

@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const CHAT_URL = "http://localhost:8000/message";
+    const CHAT_URL = "http://localhost:8000";
 
     const toggleButton = document.createElement("button");
     toggleButton.id = "chat-toggle-button";
@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // --- Event Listeners for UI interaction ---
     toggleButton.addEventListener('click', () => {
-        if(chatModal.style.display == 'none')
+        if(chatModal.style.display === 'none' || chatModal.style.display === '')
         {
             chatModal.style.display = 'flex';
             messageInput.focus();
@@ -86,11 +86,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     const handleSendMessage = () => {
-        const prompt = messageInput.value.trim();
-        if (prompt === '') return; // Don't send empty messages
+        const message = messageInput.value.trim();
+        if (message === '') return; // Don't send empty messages
 
         // 1. Display the user message
-        displayMessage(prompt, 'user');
+        displayMessage(message, 'user');
         messageInput.value = ''; // Clear the input field
         sendButton.disabled = true; // Disable button while loading
 
@@ -98,14 +98,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const loadingMessage = displayMessage('LLM is thinking...', 'loading');
 
         // 3. Send message to the server
-        fetch(CHAT_URL, {
+        fetch(`${CHAT_URL}/api/llm/call`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             // The body must be a stringified JSON object
             body: JSON.stringify({
-                prompt: prompt,
+                message: message,
                 context: context,
             })
         })
@@ -121,7 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 messagesContainer.removeChild(loadingMessage);
 
                 // Handle missing or falsy response property
-                const llmResponse = (data && data.response) || "Sorry, I didn't get a proper response.";
+                const llmResponse = (data && data.message) || "Sorry, I didn't get a proper response.";
 
                 // 4. Display the LLM's response
                 displayMessage(llmResponse, 'llm');

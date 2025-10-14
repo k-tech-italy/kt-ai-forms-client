@@ -1,11 +1,12 @@
 {
   "name": "kt-ai-forms-client",
   "private": true,
-  "version": "0.0.6",
+  "version": "0.0.7",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:cdn": "vite build && rm dist/assets/index.html",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",

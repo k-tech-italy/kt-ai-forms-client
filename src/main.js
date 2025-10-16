@@ -85,7 +85,87 @@ document.addEventListener("DOMContentLoaded", () => {
             chatModal.style.display = 'none';
         }
     });
-
+    const addEmptyValueFieldsToContext = (context) => {
+        if(!context || !context.forms)
+            return
+        for(const form of Object.values(context.forms)) {
+            if(!('values' in form)) {
+                form['values'] = {}
+            }
+            for(const field of Object.values(form.fields)){
+                if(!(field in form['values'])){
+                    form['values'][field] = ""
+                }
+            }
+        }
+    }
+    const llmPrompt = (message) => {
+        return `You are an intelligent assistant integrated into a web application.  
+        Your goal is to understand the user’s message and the context provided separately in the request body, then respond with a JSON object that contains:  
+        1. A "message" string — your reply to the user.  
+        2. A "context" object — identical to the provided one, but with any form field values filled in based on the user’s input or intent.
+        
+        Carefully analyze the given user_message and the context object (which is provided in the request body).  
+        If the user provides information that matches any form fields, fill those fields in the context’s "values" section.  
+        If some information is missing, leave those fields empty.
+        
+        Always return the result strictly in the following JSON format:
+        
+        {
+          "message": "<your reply to the user>",
+          "context": { <updated context JSON> }
+        }
+        
+        Do not include any extra text or explanation outside of this JSON.
+        
+        ---
+        
+        ### Example:
+        
+        **User message:**
+        "I’d like to send a message to the author. My name is John, and my email is john@example.com."
+        
+        **Expected output:**
+        {
+          "message": "Sure, I’ve filled in your details. What message would you like to send to the author?",
+          "context": {
+            "site": "This website enables users to submit contact forms and has records of book titles and authors.",
+            "page": "In this page, the user can submit a contact form that verifies the user's email address and delivers a message.",
+            "forms": {
+              "contactmessageform": {
+                "context": "In this form, the user needs to specify their username, email address, and message to be delivered.",
+                "fields": {
+                  "username": "This field contains a unique username for the user.",
+                  "email": "This field contains an email address that verification of the submission will be sent to.",
+                  "message": "This field contains the message the user wishes to deliver."
+                },
+                "values": {
+                  "username": "John",
+                  "email": "john@example.com",
+                  "message": ""
+                }
+              }
+            }
+          }
+        }
+        
+        ---
+        
+        Now, here is the current user message:
+        
+        USER MESSAGE:
+        ${message}`
+    }
+    const fillForms = (ai_response_context) => {
+        if(!ai_response_context || !ai_response_context.forms)
+            return
+        for(const [formName, formInfo] of Object.entries(ai_response_context.forms)) {
+            const formElement = document.forms[formName];
+            for(const [inputName, inputValue] of Object.entries(formInfo.values)){
+                formElement.elements[inputName].value = inputValue
+            }
+        }
+    }
     const handleSendMessage = () => {
         const message = messageInput.value.trim();
         if (message === '') return; // Don't send empty messages
@@ -107,7 +187,7 @@ document.addEventListener("DOMContentLoaded", () => {
             },
             // The body must be a stringified JSON object
             body: JSON.stringify({
-                message: message,
+                message: llmPrompt(message),
                 context: context,
             })
         })
@@ -127,6 +207,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 // 4. Display the LLM's response
                 displayMessage(llmResponse, 'llm');
+                fillForms(data.context)
+
             })
             .catch(error => {
                 console.error('Fetch error:', error);
@@ -150,4 +232,7 @@ document.addEventListener("DOMContentLoaded", () => {
             handleSendMessage();
         }
     });
+    if(context && Object.keys(context).length > 0){
+        addEmptyValueFieldsToContext(context)
+    }
 })

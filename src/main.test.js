@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi} from 'vitest';
 
 describe('Chat Interface', () => {
   let fetchMock;
@@ -287,7 +287,61 @@ describe('Chat Interface', () => {
             'X-Request-Marker': expect.anything()
           },
           body: JSON.stringify({
-            message: 'Test prompt',
+            message: `You are an intelligent assistant integrated into a web application.  
+        Your goal is to understand the user’s message and the context provided separately in the request body, then respond with a JSON object that contains:  
+        1. A "message" string — your reply to the user.  
+        2. A "context" object — identical to the provided one, but with any form field values filled in based on the user’s input or intent.
+        
+        Carefully analyze the given user_message and the context object (which is provided in the request body).  
+        If the user provides information that matches any form fields, fill those fields in the context’s "values" section.  
+        If some information is missing, leave those fields empty.
+        
+        Always return the result strictly in the following JSON format:
+        
+        {
+          "message": "<your reply to the user>",
+          "context": { <updated context JSON> }
+        }
+        
+        Do not include any extra text or explanation outside of this JSON.
+        
+        ---
+        
+        ### Example:
+        
+        **User message:**
+        "I’d like to send a message to the author. My name is John, and my email is john@example.com."
+        
+        **Expected output:**
+        {
+          "message": "Sure, I’ve filled in your details. What message would you like to send to the author?",
+          "context": {
+            "site": "This website enables users to submit contact forms and has records of book titles and authors.",
+            "page": "In this page, the user can submit a contact form that verifies the user's email address and delivers a message.",
+            "forms": {
+              "contactmessageform": {
+                "context": "In this form, the user needs to specify their username, email address, and message to be delivered.",
+                "fields": {
+                  "username": "This field contains a unique username for the user.",
+                  "email": "This field contains an email address that verification of the submission will be sent to.",
+                  "message": "This field contains the message the user wishes to deliver."
+                },
+                "values": {
+                  "username": "John",
+                  "email": "john@example.com",
+                  "message": ""
+                }
+              }
+            }
+          }
+        }
+        
+        ---
+        
+        Now, here is the current user message:
+        
+        USER MESSAGE:
+        Test prompt`,
             context: window.ai_context,
           })
         })
@@ -322,7 +376,61 @@ describe('Chat Interface', () => {
             'X-Request-Marker': expect.anything()
           },
           body: JSON.stringify({
-            message: 'Test prompt',
+            message: `You are an intelligent assistant integrated into a web application.  
+        Your goal is to understand the user’s message and the context provided separately in the request body, then respond with a JSON object that contains:  
+        1. A "message" string — your reply to the user.  
+        2. A "context" object — identical to the provided one, but with any form field values filled in based on the user’s input or intent.
+        
+        Carefully analyze the given user_message and the context object (which is provided in the request body).  
+        If the user provides information that matches any form fields, fill those fields in the context’s "values" section.  
+        If some information is missing, leave those fields empty.
+        
+        Always return the result strictly in the following JSON format:
+        
+        {
+          "message": "<your reply to the user>",
+          "context": { <updated context JSON> }
+        }
+        
+        Do not include any extra text or explanation outside of this JSON.
+        
+        ---
+        
+        ### Example:
+        
+        **User message:**
+        "I’d like to send a message to the author. My name is John, and my email is john@example.com."
+        
+        **Expected output:**
+        {
+          "message": "Sure, I’ve filled in your details. What message would you like to send to the author?",
+          "context": {
+            "site": "This website enables users to submit contact forms and has records of book titles and authors.",
+            "page": "In this page, the user can submit a contact form that verifies the user's email address and delivers a message.",
+            "forms": {
+              "contactmessageform": {
+                "context": "In this form, the user needs to specify their username, email address, and message to be delivered.",
+                "fields": {
+                  "username": "This field contains a unique username for the user.",
+                  "email": "This field contains an email address that verification of the submission will be sent to.",
+                  "message": "This field contains the message the user wishes to deliver."
+                },
+                "values": {
+                  "username": "John",
+                  "email": "john@example.com",
+                  "message": ""
+                }
+              }
+            }
+          }
+        }
+        
+        ---
+        
+        Now, here is the current user message:
+        
+        USER MESSAGE:
+        Test prompt`,
             context: window.ai_context,
           })
         })
@@ -652,6 +760,171 @@ describe('Chat Interface', () => {
       sendButton.click();
 
       expect(scrollTopValue).toBe(1000);
+    });
+  });
+  describe('Form fill functionality', () => {
+    it('forms should be filled', async () => {
+      fetchMock.mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          "message": "I’ve filled in both forms with example data. You can now review or submit them.",
+              "context": {
+            "site": "This website enables users to submit contact forms and has records of book titles and authors.",
+                "page": "In this page, the user can submit a contact form that verifies the users email address and delivers a message.",
+                "forms": {
+              "contactmessageform": {
+                "context": "In this form, the user needs to specify their username, email address and message to be delivered.",
+                    "fields": {
+                  "username": "This field contains a unique username for the user.",
+                      "email": "This field contains an email address that verification of the submission will be sent to.",
+                      "message": "This field contains the message the user wishes to deliver."
+                },
+                "values": {
+                  "username": "example_user",
+                      "email": "user@example.com",
+                      "message": "This is an example message for testing purposes."
+                }
+              },
+              "registerform": {
+                "context": "In this form, the user needs to provide their personal information to create a new account.",
+                    "fields": {
+                  "first_name": "This field contains the user's given name.",
+                      "last_name": "This field contains the user's family name.",
+                      "email": "This field contains the user's email address used for account verification and communication.",
+                      "password": "This field contains a secure password chosen by the user for account authentication."
+                },
+                "values": {
+                  "first_name": "John",
+                      "last_name": "Doe",
+                      "email": "john.doe@example.com",
+                      "password": "ExamplePass123"
+                }
+              }
+            }
+          }
+        })
+      });
+      document.body.innerHTML=`
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>LLM Chat Pop-up</title>
+        <form name="contactmessageform" action="#" method="post">
+          <h2>Contact Form</h2>
+      
+          <label for="username">Username:</label><br>
+          <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  placeholder="This field contains a unique username for the user."
+                  required
+          ><br><br>
+          <label for="email">Email:</label><br>
+          <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="This field contains an email address that verification of the submission will be sent to."
+                  required
+          ><br><br>
+      
+          <label for="message">Message:</label><br>
+          <textarea
+                  id="message"
+                  name="message"
+                  rows="5"
+                  placeholder="This field contains the message the user wishes to deliver."
+                  required
+          ></textarea><br><br>
+      
+          <button type="submit">Send</button>
+        </form>
+        <form name="registerform" action="#" method="post">
+          <h2>Registration Form</h2>
+      
+          <label for="first_name">First Name:</label><br>
+          <input
+                  type="text"
+                  id="first_name"
+                  name="first_name"
+                  placeholder="Enter your first name"
+                  required
+          ><br><br>
+      
+          <label for="last_name">Last Name:</label><br>
+          <input
+                  type="text"
+                  id="last_name"
+                  name="last_name"
+                  placeholder="Enter your last name"
+                  required
+          ><br><br>
+      
+          <label for="email_register">Email:</label><br>
+          <input
+                  type="email"
+                  id="email_register"
+                  name="email"
+                  placeholder="Enter your email address"
+                  required
+          ><br><br>
+      
+          <label for="password">Password:</label><br>
+          <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="Create a password"
+                  required
+          ><br><br>
+      
+          <button type="submit">Register</button>
+        </form>
+      </head>
+      <body>
+      </body>
+      </html>`
+      window.ai_context={
+        "site": "This website enables users to submit contact forms and has records of book titles and authors.",
+        "page": "In this page, the user can submit a contact form that verifies the users email address and delivers a message.",
+        "forms": {
+          "contactmessageform": {
+            "context": "In this form, the user needs to specify their username, email address and message to be delivered.",
+            "fields": {
+              "username": "This field contains a unique username for the user.",
+              "email": "This field contains an email address that verification of the submission will be sent to.",
+              "message": "This field contains the message the user wishes to deliver."
+            },
+          }
+        },
+        "registerForm": {
+          "context": "In this form, the user needs to provide their personal information to create a new account.",
+          "fields": {
+            "first_name": "This field contains the user's given name.",
+            "last_name": "This field contains the user's family name.",
+            "email": "This field contains the user's email address used for account verification and communication.",
+            "password": "This field contains a secure password chosen by the user for account authentication."
+          }
+        }
+      }
+      await loadModule()
+      const messageInput = document.getElementById('user-message');
+      const sendButton = document.getElementById('send-button');
+
+      messageInput.value = 'Fill forms with example data';
+      sendButton.click();
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      expect(document.getElementById('username').value).toBe('example_user');
+      expect(document.getElementById('email').value).toBe('user@example.com');
+      expect(document.getElementById('password').value).toBe('ExamplePass123');
+      expect(document.getElementById('message').value).toBe('This is an example message for testing purposes.');
+      expect(document.getElementById('first_name').value).toBe('John');
+      expect(document.getElementById('last_name').value).toBe('Doe');
+
     });
   });
 });

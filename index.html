@@ -77,29 +77,32 @@
 
     <button type="submit">Register</button>
   </form>
-  <script>window.ai_context={
-    "site": "This website enables users to submit contact forms and has records of book titles and authors.",
-    "page": "In this page, the user can submit a contact form that verifies the users email address and delivers a message.",
-    "forms": {
-      "contactmessageform": {
-        "context": "In this form, the user needs to specify their username, email address and message to be delivered.",
-        "fields": {
-          "username": "This field contains a unique username for the user.",
-          "email": "This field contains an email address that verification of the submission will be sent to.",
-          "message": "This field contains the message the user wishes to deliver."
+  <script>
+    window.ai_context={
+      "site": "This website enables users to submit contact forms and has records of book titles and authors.",
+      "page": "In this page, the user can submit a contact form that verifies the users email address and delivers a message.",
+      "forms": {
+        "contactmessageform": {
+          "context": "In this form, the user needs to specify their username, email address and message to be delivered.",
+          "fields": {
+            "username": "This field contains a unique username for the user.",
+            "email": "This field contains an email address that verification of the submission will be sent to.",
+            "message": "This field contains the message the user wishes to deliver."
+          },
         },
-      }
-    },
-    "registerForm": {
-      "context": "In this form, the user needs to provide their personal information to create a new account.",
-      "fields": {
-        "first_name": "This field contains the user's given name.",
-        "last_name": "This field contains the user's family name.",
-        "email": "This field contains the user's email address used for account verification and communication.",
-        "password": "This field contains a secure password chosen by the user for account authentication."
-      }
+        "registerform": {
+          "context": "In this form, the user needs to provide their personal information to create a new account.",
+          "fields": {
+            "first_name": "This field contains the user's given name.",
+            "last_name": "This field contains the user's family name.",
+            "email": "This field contains the user's email address used for account verification and communication.",
+            "password": "This field contains a secure password chosen by the user for account authentication."
+          }
+        }
+      },
     }
-  }</script>
+  </script>
+
   <link rel="stylesheet" href="./src/styles.css"/>
   <script type="module" src="./src/main.js"></script>
 </head>

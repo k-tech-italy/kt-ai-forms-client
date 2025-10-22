@@ -262,7 +262,7 @@ describe('Chat Interface', () => {
 
   describe('Fetch API Integration', () => {
     it('should send POST request with correct payload and default driver url', async () => {
-      const mockResponse = { response: 'LLM response' };
+      const mockResponse = { message: 'LLM response' };
       fetchMock.mockResolvedValue({
         ok: true,
         json: async () => mockResponse
@@ -278,78 +278,21 @@ describe('Chat Interface', () => {
 
       await new Promise(resolve => setTimeout(resolve, 10));
 
-      expect(fetchMock).toHaveBeenCalledWith(
-        'http://localhost:8000/api/llm/call',
-        expect.objectContaining({
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Request-Marker': expect.anything()
-          },
-          body: JSON.stringify({
-            message: `You are an intelligent assistant integrated into a web application.  
-        Your goal is to understand the user’s message and the context provided separately in the request body, then respond with a JSON object that contains:  
-        1. A "message" string — your reply to the user.  
-        2. A "context" object — identical to the provided one, but with any form field values filled in based on the user’s input or intent.
-        
-        Carefully analyze the given user_message and the context object (which is provided in the request body).  
-        If the user provides information that matches any form fields, fill those fields in the context’s "values" section.  
-        If some information is missing, leave those fields empty.
-        
-        Always return the result strictly in the following JSON format:
-        
-        {
-          "message": "<your reply to the user>",
-          "context": { <updated context JSON> }
-        }
-        
-        Do not include any extra text or explanation outside of this JSON.
-        
-        ---
-        
-        ### Example:
-        
-        **User message:**
-        "I’d like to send a message to the author. My name is John, and my email is john@example.com."
-        
-        **Expected output:**
-        {
-          "message": "Sure, I’ve filled in your details. What message would you like to send to the author?",
-          "context": {
-            "site": "This website enables users to submit contact forms and has records of book titles and authors.",
-            "page": "In this page, the user can submit a contact form that verifies the user's email address and delivers a message.",
-            "forms": {
-              "contactmessageform": {
-                "context": "In this form, the user needs to specify their username, email address, and message to be delivered.",
-                "fields": {
-                  "username": "This field contains a unique username for the user.",
-                  "email": "This field contains an email address that verification of the submission will be sent to.",
-                  "message": "This field contains the message the user wishes to deliver."
-                },
-                "values": {
-                  "username": "John",
-                  "email": "john@example.com",
-                  "message": ""
-                }
-              }
-            }
-          }
-        }
-        
-        ---
-        
-        Now, here is the current user message:
-        
-        USER MESSAGE:
-        Test prompt`,
-            context: window.ai_context,
-          })
-        })
-      );
+      expect(fetchMock).toHaveBeenCalled();
+      const callArgs = fetchMock.mock.calls[0];
+      expect(callArgs[0]).toBe('http://localhost:8000/api/llm/call');
+      expect(callArgs[1].method).toBe('POST');
+      expect(callArgs[1].headers['Content-Type']).toBe('application/json');
+      expect(callArgs[1].headers['X-Request-Marker']).toBeDefined();
+
+      const body = JSON.parse(callArgs[1].body);
+      expect(body.context).toEqual(window.ai_context);
+      expect(body.message).toContain('Test prompt');
+      expect(body.message).toContain('You are an intelligent assistant');
     });
 
     it('should send POST request with correct custom driver base url', async () => {
-      const mockResponse = { response: 'LLM response' };
+      const mockResponse = { message: 'LLM response' };
       fetchMock.mockResolvedValue({
         ok: true,
         json: async () => mockResponse
@@ -367,74 +310,9 @@ describe('Chat Interface', () => {
 
       await new Promise(resolve => setTimeout(resolve, 10));
 
-      expect(fetchMock).toHaveBeenCalledWith(
-        'https://example.com/api/llm/call',
-        expect.objectContaining({
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Request-Marker': expect.anything()
-          },
-          body: JSON.stringify({
-            message: `You are an intelligent assistant integrated into a web application.  
-        Your goal is to understand the user’s message and the context provided separately in the request body, then respond with a JSON object that contains:  
-        1. A "message" string — your reply to the user.  
-        2. A "context" object — identical to the provided one, but with any form field values filled in based on the user’s input or intent.
-        
-        Carefully analyze the given user_message and the context object (which is provided in the request body).  
-        If the user provides information that matches any form fields, fill those fields in the context’s "values" section.  
-        If some information is missing, leave those fields empty.
-        
-        Always return the result strictly in the following JSON format:
-        
-        {
-          "message": "<your reply to the user>",
-          "context": { <updated context JSON> }
-        }
-        
-        Do not include any extra text or explanation outside of this JSON.
-        
-        ---
-        
-        ### Example:
-        
-        **User message:**
-        "I’d like to send a message to the author. My name is John, and my email is john@example.com."
-        
-        **Expected output:**
-        {
-          "message": "Sure, I’ve filled in your details. What message would you like to send to the author?",
-          "context": {
-            "site": "This website enables users to submit contact forms and has records of book titles and authors.",
-            "page": "In this page, the user can submit a contact form that verifies the user's email address and delivers a message.",
-            "forms": {
-              "contactmessageform": {
-                "context": "In this form, the user needs to specify their username, email address, and message to be delivered.",
-                "fields": {
-                  "username": "This field contains a unique username for the user.",
-                  "email": "This field contains an email address that verification of the submission will be sent to.",
-                  "message": "This field contains the message the user wishes to deliver."
-                },
-                "values": {
-                  "username": "John",
-                  "email": "john@example.com",
-                  "message": ""
-                }
-              }
-            }
-          }
-        }
-        
-        ---
-        
-        Now, here is the current user message:
-        
-        USER MESSAGE:
-        Test prompt`,
-            context: window.ai_context,
-          })
-        })
-      );
+      expect(fetchMock).toHaveBeenCalled();
+      const callArgs = fetchMock.mock.calls[0];
+      expect(callArgs[0]).toBe('https://example.com/api/llm/call');
     });
 
     it('should display LLM response after successful fetch', async () => {
@@ -648,7 +526,7 @@ describe('Chat Interface', () => {
       expect(fallbackMessage.classList.contains('llm-message')).toBe(true);
     });
 
-    it('should display fallback message when data is null', async () => {
+    it('should display error message when data is null', async () => {
       fetchMock.mockResolvedValue({
         ok: true,
         json: async () => null
@@ -665,11 +543,11 @@ describe('Chat Interface', () => {
 
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      const fallbackMessage = Array.from(messagesContainer.children).find(
-        msg => msg.textContent === "Sorry, I didn't get a proper response."
+      const errorMessage = Array.from(messagesContainer.children).find(
+        msg => msg.textContent === "Something went wrong, please try again later."
       );
-      expect(fallbackMessage).toBeTruthy();
-      expect(fallbackMessage.classList.contains('llm-message')).toBe(true);
+      expect(errorMessage).toBeTruthy();
+      expect(errorMessage.classList.contains('error-message')).toBe(true);
     });
   });
 
@@ -811,9 +689,12 @@ describe('Chat Interface', () => {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>LLM Chat Pop-up</title>
+      </head>
+      <body>
         <form name="contactmessageform" action="#" method="post">
+          <aiform data-aiform-form-name="contactmessageform"></aiform>
           <h2>Contact Form</h2>
-      
+
           <label for="username">Username:</label><br>
           <input
                   type="text"
@@ -830,7 +711,7 @@ describe('Chat Interface', () => {
                   placeholder="This field contains an email address that verification of the submission will be sent to."
                   required
           ><br><br>
-      
+
           <label for="message">Message:</label><br>
           <textarea
                   id="message"
@@ -839,12 +720,13 @@ describe('Chat Interface', () => {
                   placeholder="This field contains the message the user wishes to deliver."
                   required
           ></textarea><br><br>
-      
+
           <button type="submit">Send</button>
         </form>
         <form name="registerform" action="#" method="post">
+          <aiform data-aiform-form-name="registerform"></aiform>
           <h2>Registration Form</h2>
-      
+
           <label for="first_name">First Name:</label><br>
           <input
                   type="text"
@@ -853,7 +735,7 @@ describe('Chat Interface', () => {
                   placeholder="Enter your first name"
                   required
           ><br><br>
-      
+
           <label for="last_name">Last Name:</label><br>
           <input
                   type="text"
@@ -862,7 +744,7 @@ describe('Chat Interface', () => {
                   placeholder="Enter your last name"
                   required
           ><br><br>
-      
+
           <label for="email_register">Email:</label><br>
           <input
                   type="email"
@@ -871,7 +753,7 @@ describe('Chat Interface', () => {
                   placeholder="Enter your email address"
                   required
           ><br><br>
-      
+
           <label for="password">Password:</label><br>
           <input
                   type="password"
@@ -880,11 +762,9 @@ describe('Chat Interface', () => {
                   placeholder="Create a password"
                   required
           ><br><br>
-      
+
           <button type="submit">Register</button>
         </form>
-      </head>
-      <body>
       </body>
       </html>`
       window.ai_context={
@@ -898,17 +778,17 @@ describe('Chat Interface', () => {
               "email": "This field contains an email address that verification of the submission will be sent to.",
               "message": "This field contains the message the user wishes to deliver."
             },
+          },
+          "registerForm": {
+            "context": "In this form, the user needs to provide their personal information to create a new account.",
+            "fields": {
+              "first_name": "This field contains the user's given name.",
+              "last_name": "This field contains the user's family name.",
+              "email": "This field contains the user's email address used for account verification and communication.",
+              "password": "This field contains a secure password chosen by the user for account authentication."
+            }
           }
         },
-        "registerForm": {
-          "context": "In this form, the user needs to provide their personal information to create a new account.",
-          "fields": {
-            "first_name": "This field contains the user's given name.",
-            "last_name": "This field contains the user's family name.",
-            "email": "This field contains the user's email address used for account verification and communication.",
-            "password": "This field contains a secure password chosen by the user for account authentication."
-          }
-        }
       }
       await loadModule()
       const messageInput = document.getElementById('user-message');

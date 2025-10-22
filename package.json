@@ -20,7 +20,7 @@
     "@vitest/ui": "^3.2.4",
     "jsdom": "^26.1.0",
     "node-coverage-badges": "^1.5.2",
-    "vite": "^7.1.9",
+    "vite": "^7.1.11",
     "vitest": "^3.2.4"
   },
   "dependencies": {

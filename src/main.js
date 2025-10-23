@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const messageInput = document.getElementById('user-message');
     const sendButton = document.getElementById('send-button');
 
-    const context = window.ai_context
+    let context = window.ai_context
     if (!context || Object.keys(context).length === 0) {
         displayMessage('No contex provided, try to reload the page', 'llm', true);
         sendButton.disabled = true;
@@ -213,7 +213,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
         }
-        window.ai_context = ai_response_context
+        context = ai_response_context
     }
     const handleSendMessage = () => {
         const message = messageInput.value.trim();

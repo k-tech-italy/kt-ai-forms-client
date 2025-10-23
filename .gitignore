@@ -1,3 +1,12 @@
+.*
+~*
+
+!.gitignore
+!.*.sample
+!.nvmrc
+!.npmrc
+!.github
+
 # Logs
 logs
 *.log
